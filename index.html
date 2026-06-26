@@ -25,14 +25,21 @@
         .toggle-checkbox:checked + .toggle-label { background-color: #22c55e; }
         .toggle-checkbox { right: 0; z-index: 1; border-color: #e5e7eb; transition: all 0.3s; }
         .toggle-label { width: 3rem; height: 1.5rem; background-color: #e5e7eb; border-radius: 9999px; transition: all 0.3s; }
+        
+        /* Estilos Toggle Gris (Para No Medición) */
+        .toggle-checkbox-gray:checked { right: 0; border-color: #6b7280; }
+        .toggle-checkbox-gray:checked + .toggle-label-gray { background-color: #6b7280; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased pb-20 select-none">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased pb-20 select-none relative">
 
     <!-- Encabezado -->
-    <header class="bg-white shadow-sm px-4 py-4 sticky top-0 z-20 flex justify-center items-center">
+    <header class="bg-white shadow-sm px-4 py-4 sticky top-0 z-20 flex justify-center items-center relative">
         <svg class="w-6 h-6 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
         <h1 class="text-xl font-bold text-gray-800">Mi Tensión</h1>
+        <button onclick="openSettings()" class="absolute right-4 p-2 text-gray-400 hover:text-gray-700 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        </button>
     </header>
 
     <!-- Pestaña 1: Registro / Calendario -->
@@ -80,8 +87,17 @@
                 <h2 id="form-date-title" class="font-bold text-gray-800">Fecha</h2>
             </div>
 
+            <!-- Opcion No Medición -->
+            <div class="flex items-center justify-between bg-gray-100 p-3 rounded-xl border border-gray-200">
+                <span class="font-bold text-gray-700 text-sm">⚪ No medición</span>
+                <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" id="nomed-toggle" class="toggle-checkbox toggle-checkbox-gray absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" onchange="toggleNoMedicion()"/>
+                    <label for="nomed-toggle" class="toggle-label toggle-label-gray block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                </div>
+            </div>
+
             <!-- Tabla de tomas -->
-            <div>
+            <div id="tomas-container">
                 <div class="grid grid-cols-4 text-center text-xs font-semibold text-gray-500 mb-2">
                     <div class="text-left pl-1">Toma</div><div>Alta</div><div>Baja</div><div>Pulso</div>
                 </div>
@@ -89,29 +105,29 @@
                     <!-- Toma 1 -->
                     <div class="grid grid-cols-4 gap-2 items-center">
                         <div class="text-sm font-bold text-gray-400">1ª</div>
-                        <input type="number" id="sys-0" oninput="calculateAverages()" class="w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
-                        <input type="number" id="dia-0" oninput="calculateAverages()" class="w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
-                        <input type="number" id="pul-0" oninput="calculateAverages()" class="w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
+                        <input type="number" id="sys-0" oninput="calculateAverages()" class="data-input w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
+                        <input type="number" id="dia-0" oninput="calculateAverages()" class="data-input w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
+                        <input type="number" id="pul-0" oninput="calculateAverages()" class="data-input w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
                     </div>
                     <!-- Toma 2 -->
                     <div class="grid grid-cols-4 gap-2 items-center">
                         <div class="text-sm font-bold text-gray-400">2ª</div>
-                        <input type="number" id="sys-1" oninput="calculateAverages()" class="w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
-                        <input type="number" id="dia-1" oninput="calculateAverages()" class="w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
-                        <input type="number" id="pul-1" oninput="calculateAverages()" class="w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
+                        <input type="number" id="sys-1" oninput="calculateAverages()" class="data-input w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
+                        <input type="number" id="dia-1" oninput="calculateAverages()" class="data-input w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
+                        <input type="number" id="pul-1" oninput="calculateAverages()" class="data-input w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
                     </div>
                     <!-- Toma 3 -->
                     <div class="grid grid-cols-4 gap-2 items-center">
                         <div class="text-sm font-bold text-gray-400">3ª</div>
-                        <input type="number" id="sys-2" oninput="calculateAverages()" class="w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
-                        <input type="number" id="dia-2" oninput="calculateAverages()" class="w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
-                        <input type="number" id="pul-2" oninput="calculateAverages()" class="w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
+                        <input type="number" id="sys-2" oninput="calculateAverages()" class="data-input w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
+                        <input type="number" id="dia-2" oninput="calculateAverages()" class="data-input w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
+                        <input type="number" id="pul-2" oninput="calculateAverages()" class="data-input w-full text-center bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg focus:ring-2 focus:ring-blue-300 outline-none" placeholder="-">
                     </div>
                 </div>
             </div>
 
             <!-- Medias -->
-            <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 grid grid-cols-4 items-center">
+            <div id="averages-container" class="bg-blue-50 border border-blue-100 rounded-xl p-3 grid grid-cols-4 items-center">
                 <div class="text-sm font-bold text-blue-800">Media</div>
                 <div id="avg-sys" class="text-center font-bold text-xl text-blue-900">-</div>
                 <div id="avg-dia" class="text-center font-bold text-xl text-blue-900">-</div>
@@ -121,12 +137,19 @@
             <!-- Indicador en tiempo real -->
             <div id="bp-indicator" class="hidden"></div>
 
-            <!-- Medicación y Guardar -->
-            <div class="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-200">
-                <span class="font-medium text-gray-700">¿Pastilla tomada?</span>
-                <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
-                    <input type="checkbox" name="toggle" id="meds-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
-                    <label for="meds-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+            <!-- Medicación y Comentarios -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <span class="font-medium text-gray-700">¿Pastilla tomada?</span>
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" id="meds-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                        <label for="meds-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Comentarios (Opcional)</label>
+                    <textarea id="comments-input" rows="2" placeholder="Ej: Dolor de cabeza, he hecho deporte..." class="w-full bg-white border border-gray-200 rounded-lg p-2 text-sm outline-none focus:border-blue-400 resize-none"></textarea>
                 </div>
             </div>
 
@@ -191,6 +214,49 @@
 
     </main>
 
+    <!-- Modal de Configuración -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl space-y-5">
+            <h3 class="font-bold text-xl text-gray-800 border-b pb-2">⚙️ Configuración</h3>
+            <p class="text-sm text-gray-600">Define tus valores objetivo para considerar la tensión como "Normal".</p>
+            
+            <div class="space-y-4">
+                <div class="bg-red-50 p-3 rounded-lg border border-red-100">
+                    <h4 class="font-bold text-red-800 text-sm mb-2">Tensión Alta (Sistólica)</h4>
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <label class="text-xs text-red-600 font-semibold block mb-1">Mínimo</label>
+                            <input type="number" id="set-sys-min" class="w-full p-2 rounded border border-red-200 outline-none focus:ring-1 ring-red-400">
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-xs text-red-600 font-semibold block mb-1">Máximo</label>
+                            <input type="number" id="set-sys-max" class="w-full p-2 rounded border border-red-200 outline-none focus:ring-1 ring-red-400">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                    <h4 class="font-bold text-blue-800 text-sm mb-2">Tensión Baja (Diastólica)</h4>
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <label class="text-xs text-blue-600 font-semibold block mb-1">Mínimo</label>
+                            <input type="number" id="set-dia-min" class="w-full p-2 rounded border border-blue-200 outline-none focus:ring-1 ring-blue-400">
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-xs text-blue-600 font-semibold block mb-1">Máximo</label>
+                            <input type="number" id="set-dia-max" class="w-full p-2 rounded border border-blue-200 outline-none focus:ring-1 ring-blue-400">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <button onclick="closeSettings()" class="flex-1 py-3 bg-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-300">Cancelar</button>
+                <button onclick="saveSettings()" class="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700">Guardar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Navegación Inferior -->
     <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around no-print shadow-[0_-2px_10px_rgba(0,0,0,0.05)] z-20 max-w-md left-1/2 transform -translate-x-1/2">
         <button onclick="switchTab('registro')" id="nav-registro" class="nav-btn text-blue-600 flex flex-col items-center justify-center w-full py-3">
@@ -209,22 +275,83 @@
 
     <!-- Script de lógica de la aplicación -->
     <script>
-        // --- ESTADO DE LA APLICACIÓN ---
+        // --- ESTADO Y CONFIGURACIÓN ---
         let records = JSON.parse(localStorage.getItem('tensionData')) || {};
+        let userSettings = JSON.parse(localStorage.getItem('tensionSettings')) || {
+            sysMin: 120, sysMax: 130, diaMin: 70, diaMax: 80
+        };
+
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
         let selectedDateStr = null;
 
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
+        // --- LÓGICA DE SALUD Y COLORES ---
+        function getBPStatus(sys, dia, isNoMedicion) {
+            if (isNoMedicion) {
+                return { label: 'No medición', statusLabel: 'No medición', dot: 'bg-gray-400', emoji: '⚪', colorClasses: 'bg-gray-100 text-gray-600 border-gray-300' };
+            }
+            if (!sys || !dia) return null;
+
+            // Calcular diferencia respecto a los límites
+            let sysDiff = 0;
+            if (sys < userSettings.sysMin) sysDiff = userSettings.sysMin - sys;
+            else if (sys > userSettings.sysMax) sysDiff = sys - userSettings.sysMax;
+
+            let diaDiff = 0;
+            if (dia < userSettings.diaMin) diaDiff = userSettings.diaMin - dia;
+            else if (dia > userSettings.diaMax) diaDiff = dia - userSettings.diaMax;
+
+            const maxDiff = Math.max(sysDiff, diaDiff);
+
+            if (maxDiff === 0) {
+                return { label: 'Tensión dentro del rango normal.', statusLabel: 'Correcta', dot: 'bg-green-500', emoji: '🟢', colorClasses: 'bg-green-50 text-green-800 border-green-200' };
+            } else if (maxDiff <= 10) {
+                return { label: 'Tensión ligeramente fuera de rango.', statusLabel: 'Ligeramente fuera de rango', dot: 'bg-yellow-400', emoji: '🟡', colorClasses: 'bg-yellow-50 text-yellow-800 border-yellow-200' };
+            } else {
+                return { label: 'Tensión fuera de rango.', statusLabel: 'Fuera de rango', dot: 'bg-red-500', emoji: '🔴', colorClasses: 'bg-red-50 text-red-800 border-red-200' };
+            }
+        }
+
+        // --- CONFIGURACIÓN ---
+        function openSettings() {
+            document.getElementById('set-sys-min').value = userSettings.sysMin;
+            document.getElementById('set-sys-max').value = userSettings.sysMax;
+            document.getElementById('set-dia-min').value = userSettings.diaMin;
+            document.getElementById('set-dia-max').value = userSettings.diaMax;
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function saveSettings() {
+            userSettings = {
+                sysMin: parseInt(document.getElementById('set-sys-min').value) || 120,
+                sysMax: parseInt(document.getElementById('set-sys-max').value) || 130,
+                diaMin: parseInt(document.getElementById('set-dia-min').value) || 70,
+                diaMax: parseInt(document.getElementById('set-dia-max').value) || 80
+            };
+            localStorage.setItem('tensionSettings', JSON.stringify(userSettings));
+            closeSettings();
+            
+            // Recargar vista activa para aplicar nuevos colores
+            if (document.getElementById('view-registro').classList.contains('active') && !document.getElementById('calendar-section').classList.contains('hidden')) {
+                renderCalendar();
+            } else if (!document.getElementById('form-section').classList.contains('hidden')) {
+                calculateAverages();
+            } else if (document.getElementById('view-historial').classList.contains('active')) {
+                renderHistory();
+            }
+        }
+
         // --- NAVEGACIÓN DE PESTAÑAS ---
         function switchTab(tabName) {
-            // Ocultar todas las páginas
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            // Mostrar la seleccionada
             document.getElementById(`view-${tabName}`).classList.add('active');
             
-            // Actualizar colores de los botones
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('text-blue-600');
                 btn.classList.add('text-gray-400');
@@ -232,10 +359,11 @@
             document.getElementById(`nav-${tabName}`).classList.remove('text-gray-400');
             document.getElementById(`nav-${tabName}`).classList.add('text-blue-600');
 
-            // Acciones específicas al entrar a una pestaña
             if (tabName === 'historial') renderHistory();
             if (tabName === 'opciones') setDefaultDates();
-            if (tabName === 'registro') renderCalendar();
+            if (tabName === 'registro') {
+                closeForm(); // Volver al calendario por defecto
+            }
         }
 
         // --- CALENDARIO ---
@@ -246,34 +374,33 @@
             
             monthYearEl.textContent = `${meses[currentMonth]} ${currentYear}`;
             
-            // Primer día del mes y número de días
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             
-            // Ajustar para que la semana empiece en Lunes (0 = Lunes, 6 = Domingo)
             let startDay = firstDay - 1;
-            if (startDay === -1) startDay = 6; // Domingo
+            if (startDay === -1) startDay = 6; 
 
             const today = new Date();
             const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-            // Espacios en blanco al inicio
             for (let i = 0; i < startDay; i++) {
                 gridEl.innerHTML += `<div class="p-2"></div>`;
             }
 
-            // Días del mes
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const hasData = records[dateStr] ? true : false;
+                const data = records[dateStr];
                 const isToday = dateStr === todayStr;
                 
                 let btnClasses = "relative w-10 h-10 mx-auto flex items-center justify-center rounded-full text-sm font-medium transition-colors cursor-pointer ";
-                
                 if (isToday) btnClasses += "bg-blue-100 text-blue-800 font-bold border-2 border-blue-500 ";
                 else btnClasses += "hover:bg-gray-100 text-gray-700 ";
 
-                let dotHtml = hasData ? `<span class="absolute bottom-1 w-1.5 h-1.5 bg-green-500 rounded-full"></span>` : '';
+                let dotHtml = '';
+                if (data) {
+                    const status = getBPStatus(data.avgSys, data.avgDia, data.noMedicion);
+                    if (status) dotHtml = `<span class="absolute bottom-1 w-2 h-2 ${status.dot} rounded-full shadow-sm"></span>`;
+                }
 
                 gridEl.innerHTML += `
                     <div class="py-1">
@@ -285,7 +412,7 @@
                 `;
             }
             
-            renderLatestRecords(); // Actualizar la lista de últimas mediciones
+            renderLatestRecords(); 
         }
 
         function changeMonth(dir) {
@@ -300,7 +427,6 @@
             const listEl = document.getElementById('latest-records-list');
             listEl.innerHTML = '';
             
-            // Ordenar por fecha de forma descendente y obtener las 3 más recientes
             const dates = Object.keys(records).sort((a, b) => new Date(b) - new Date(a)).slice(0, 3);
             
             if (dates.length === 0) {
@@ -313,16 +439,22 @@
                 const p = dateStr.split('-');
                 const formattedDate = `${p[2]}/${p[1]}/${p[0]}`;
                 const hora = data.hora || '--:--';
+                const status = getBPStatus(data.avgSys, data.avgDia, data.noMedicion);
+                
+                let valHtml = data.noMedicion ? `<div class="font-bold text-gray-600">⚪ No medición</div>` 
+                                              : `<div class="font-bold text-gray-900">❤️ ${data.avgSys || '-'} <span class="text-gray-400 font-normal mx-1">/</span> 💙 ${data.avgDia || '-'}</div>
+                                                 <div class="text-xs text-gray-500 mt-1">❤️‍🩹 Pulso: ${data.avgPul || '-'}</div>`;
                 
                 listEl.innerHTML += `
                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-100 cursor-pointer hover:bg-gray-200 transition-colors" onclick="openForm('${dateStr}')">
                         <div class="text-sm flex flex-col gap-1">
                             <span class="font-bold text-gray-700">📅 ${formattedDate}</span>
                             <span class="text-xs text-gray-500">🕒 ${hora}</span>
+                            ${data.comentarios ? `<span class="text-xs text-gray-400 truncate max-w-[120px]">📝 ${data.comentarios}</span>` : ''}
                         </div>
-                        <div class="text-right">
-                            <div class="font-bold text-gray-900">❤️ ${data.avgSys || '-'} <span class="text-gray-400 font-normal mx-1">/</span> 💙 ${data.avgDia || '-'}</div>
-                            <div class="text-xs text-gray-500 mt-1">❤️‍🩹 Pulso: ${data.avgPul || '-'}</div>
+                        <div class="text-right flex items-center gap-3">
+                            <div class="text-right">${valHtml}</div>
+                            ${status && !data.noMedicion ? `<div class="w-3 h-3 rounded-full ${status.dot}"></div>` : ''}
                         </div>
                     </div>
                 `;
@@ -330,47 +462,80 @@
         }
 
         // --- FORMULARIO DIARIO ---
+        function toggleNoMedicion() {
+            const isNoMed = document.getElementById('nomed-toggle').checked;
+            const inputs = document.querySelectorAll('.data-input');
+            const avgContainer = document.getElementById('averages-container');
+            const indicatorEl = document.getElementById('bp-indicator');
+
+            inputs.forEach(i => {
+                i.disabled = isNoMed;
+                if(isNoMed) i.classList.add('opacity-50');
+                else i.classList.remove('opacity-50');
+            });
+
+            if (isNoMed) {
+                document.getElementById('avg-sys').textContent = '-';
+                document.getElementById('avg-dia').textContent = '-';
+                document.getElementById('avg-pul').textContent = '-';
+                avgContainer.classList.add('opacity-50');
+                
+                // Mostrar indicador de No Medición
+                const status = getBPStatus(null, null, true);
+                indicatorEl.classList.remove('hidden');
+                indicatorEl.className = `rounded-xl p-3 text-sm font-medium border flex items-start gap-2 transition-colors ${status.colorClasses}`;
+                indicatorEl.innerHTML = `<span class="text-xl leading-none mt-0.5">${status.emoji}</span> <p>${status.label}</p>`;
+            } else {
+                avgContainer.classList.remove('opacity-50');
+                calculateAverages();
+            }
+        }
+
         function openForm(dateStr) {
             selectedDateStr = dateStr;
             document.getElementById('calendar-section').classList.add('hidden');
             document.getElementById('latest-records-section').classList.add('hidden');
             document.getElementById('form-section').classList.remove('hidden');
             
-            // Formatear título (ej. 26 de Junio de 2026)
             const d = new Date(dateStr);
             document.getElementById('form-date-title').textContent = `${d.getDate()} ${meses[d.getMonth()]} ${d.getFullYear()}`;
 
-            // Limpiar inputs
-            for(let i=0; i<3; i++) {
-                document.getElementById(`sys-${i}`).value = '';
-                document.getElementById(`dia-${i}`).value = '';
-                document.getElementById(`pul-${i}`).value = '';
-            }
+            // Reset inputs
+            document.querySelectorAll('.data-input').forEach(i => i.value = '');
             document.getElementById('meds-toggle').checked = false;
+            document.getElementById('nomed-toggle').checked = false;
+            document.getElementById('comments-input').value = '';
 
-            // Cargar datos si existen
+            // Cargar datos
             if (records[dateStr]) {
                 const data = records[dateStr];
-                for(let i=0; i<3; i++) {
-                    if (data.tomas[i]) {
-                        document.getElementById(`sys-${i}`).value = data.tomas[i].sys || '';
-                        document.getElementById(`dia-${i}`).value = data.tomas[i].dia || '';
-                        document.getElementById(`pul-${i}`).value = data.tomas[i].pul || '';
+                if (data.tomas) {
+                    for(let i=0; i<3; i++) {
+                        if (data.tomas[i]) {
+                            document.getElementById(`sys-${i}`).value = data.tomas[i].sys || '';
+                            document.getElementById(`dia-${i}`).value = data.tomas[i].dia || '';
+                            document.getElementById(`pul-${i}`).value = data.tomas[i].pul || '';
+                        }
                     }
                 }
                 document.getElementById('meds-toggle').checked = data.meds || false;
+                document.getElementById('nomed-toggle').checked = data.noMedicion || false;
+                document.getElementById('comments-input').value = data.comentarios || '';
             }
-            calculateAverages();
+            
+            toggleNoMedicion(); // Activa/Desactiva visualmente según el estado cargado
         }
 
         function closeForm() {
             document.getElementById('form-section').classList.add('hidden');
             document.getElementById('calendar-section').classList.remove('hidden');
             document.getElementById('latest-records-section').classList.remove('hidden');
-            renderCalendar(); // Refrescar por si añadimos datos (aparece el punto)
+            renderCalendar(); 
         }
 
         function calculateAverages() {
+            if (document.getElementById('nomed-toggle').checked) return;
+
             let sysSum = 0, diaSum = 0, pulSum = 0;
             let sysCount = 0, diaCount = 0, pulCount = 0;
 
@@ -392,35 +557,22 @@
             document.getElementById('avg-dia').textContent = diaVal || '-';
             document.getElementById('avg-pul').textContent = pulVal || '-';
 
-            // Actualizar indicador de salud en tiempo real
             const indicatorEl = document.getElementById('bp-indicator');
             if (sysVal && diaVal) {
+                const status = getBPStatus(sysVal, diaVal, false);
                 indicatorEl.classList.remove('hidden');
-                let status, msg, colorClasses;
-                
-                // Lógica de validación según el requerimiento
-                if (sysVal >= 140 || diaVal >= 90 || sysVal <= 90 || diaVal <= 50) {
-                    status = '🔴';
-                    msg = 'Tensión elevada. Se recomienda revisarla o consultar con un profesional si persiste.';
-                    colorClasses = 'bg-red-50 text-red-800 border-red-200';
-                } else if (sysVal >= 120 && sysVal <= 130 && diaVal >= 70 && diaVal <= 80) {
-                    status = '🟢';
-                    msg = 'Tensión dentro del rango recomendado.';
-                    colorClasses = 'bg-green-50 text-green-800 border-green-200';
-                } else {
-                    status = '🟡';
-                    msg = 'Tensión ligeramente fuera del rango recomendado.';
-                    colorClasses = 'bg-yellow-50 text-yellow-800 border-yellow-200';
-                }
-
-                indicatorEl.className = `rounded-xl p-3 text-sm font-medium border flex items-start gap-2 transition-colors ${colorClasses}`;
-                indicatorEl.innerHTML = `<span class="text-xl leading-none mt-0.5">${status}</span> <p>${msg}</p>`;
+                indicatorEl.className = `rounded-xl p-3 text-sm font-medium border flex items-start gap-2 transition-colors ${status.colorClasses}`;
+                indicatorEl.innerHTML = `<span class="text-xl leading-none mt-0.5">${status.emoji}</span> <p>${status.label}</p>`;
             } else {
                 indicatorEl.classList.add('hidden');
             }
         }
 
         function saveRecord() {
+            const isNoMed = document.getElementById('nomed-toggle').checked;
+            const comments = document.getElementById('comments-input').value.trim();
+            const meds = document.getElementById('meds-toggle').checked;
+
             const tomas = [];
             for(let i=0; i<3; i++) {
                 tomas.push({
@@ -433,8 +585,8 @@
             const avgSys = document.getElementById('avg-sys').textContent;
             const avgDia = document.getElementById('avg-dia').textContent;
 
-            // Si todo está vacío (media es '-'), borramos el registro si existía, o no guardamos
-            if (avgSys === '-' && avgDia === '-') {
+            // Si no es "No medición" y todo está vacío, borrar.
+            if (!isNoMed && avgSys === '-' && avgDia === '-' && !comments && !meds) {
                 if (records[selectedDateStr]) {
                     delete records[selectedDateStr];
                     localStorage.setItem('tensionData', JSON.stringify(records));
@@ -443,26 +595,25 @@
                 return;
             }
 
-            // Registrar la hora actual si es un registro nuevo (o conservar la anterior)
             const horaActual = new Date().toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'});
             const horaGuardada = (records[selectedDateStr] && records[selectedDateStr].hora) 
                 ? records[selectedDateStr].hora 
                 : horaActual;
 
             const data = {
-                tomas: tomas,
-                avgSys: avgSys !== '-' ? parseInt(avgSys) : null,
-                avgDia: avgDia !== '-' ? parseInt(avgDia) : null,
-                avgPul: document.getElementById('avg-pul').textContent !== '-' ? parseInt(document.getElementById('avg-pul').textContent) : null,
-                meds: document.getElementById('meds-toggle').checked,
-                hora: horaGuardada
+                tomas: isNoMed ? [] : tomas,
+                avgSys: (!isNoMed && avgSys !== '-') ? parseInt(avgSys) : null,
+                avgDia: (!isNoMed && avgDia !== '-') ? parseInt(avgDia) : null,
+                avgPul: (!isNoMed && document.getElementById('avg-pul').textContent !== '-') ? parseInt(document.getElementById('avg-pul').textContent) : null,
+                meds: meds,
+                hora: horaGuardada,
+                noMedicion: isNoMed,
+                comentarios: comments
             };
 
             records[selectedDateStr] = data;
             localStorage.setItem('tensionData', JSON.stringify(records));
             
-            // Efecto visual simple
-            alert('Registro guardado correctamente');
             closeForm();
         }
 
@@ -471,7 +622,7 @@
             const listEl = document.getElementById('history-list');
             listEl.innerHTML = '';
 
-            const dates = Object.keys(records).sort((a, b) => new Date(b) - new Date(a)); // Descendente
+            const dates = Object.keys(records).sort((a, b) => new Date(b) - new Date(a));
 
             if (dates.length === 0) {
                 listEl.innerHTML = `<div class="text-center p-8 text-gray-400">No hay registros guardados.</div>`;
@@ -482,22 +633,27 @@
                 const data = records[dateStr];
                 const parts = dateStr.split('-');
                 const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                const status = getBPStatus(data.avgSys, data.avgDia, data.noMedicion);
                 
-                const medsHtml = data.meds 
-                    ? `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold border border-green-200">Pastilla</span>` 
-                    : ``;
+                const medsHtml = data.meds ? `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold border border-green-200">Pastilla</span>` : ``;
+                
+                let valHtml = data.noMedicion 
+                    ? `<div class="text-lg font-bold text-gray-500 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">⚪ No medición</div>`
+                    : `<div class="text-xl font-black text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">${data.avgSys || '-'}/${data.avgDia || '-'}</div>`;
 
                 listEl.innerHTML += `
                     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between" onclick="switchTab('registro'); setTimeout(()=>openForm('${dateStr}'), 100)">
-                        <div>
+                        <div class="flex-1">
                             <div class="font-bold text-gray-800">${formattedDate}</div>
-                            <div class="flex gap-2 mt-1 items-center">
-                                <span class="text-xs text-gray-500">Pulso: ${data.avgPul || '-'}</span>
+                            <div class="flex flex-wrap gap-2 mt-1 items-center">
+                                ${!data.noMedicion ? `<span class="text-xs text-gray-500">Pulso: ${data.avgPul || '-'}</span>` : ''}
                                 ${medsHtml}
+                                ${status && !data.noMedicion ? `<span class="text-xs font-semibold px-2 py-0.5 rounded-full ${status.colorClasses}">${status.statusLabel}</span>` : ''}
                             </div>
+                            ${data.comentarios ? `<div class="text-sm text-gray-500 mt-2 italic">"${data.comentarios}"</div>` : ''}
                         </div>
-                        <div class="text-xl font-black text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
-                            ${data.avgSys || '-'}/${data.avgDia || '-'}
+                        <div class="ml-4 flex items-center gap-2">
+                            ${valHtml}
                         </div>
                     </div>
                 `;
@@ -536,53 +692,61 @@
             }
 
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            // Usamos formato 'landscape' (horizontal) porque hay muchas columnas
+            const doc = new jsPDF('landscape');
 
-            // Título
             doc.setFontSize(16);
             doc.text("Cuaderno de Tensión Arterial", 14, 20);
-            
-            // Subtítulo (Fechas)
             doc.setFontSize(10);
             doc.setTextColor(100);
             doc.text(`Periodo: ${formatDateEs(fromDate)} al ${formatDateEs(toDate)}`, 14, 28);
+            
+            doc.text(`Valores Objetivo: Sistólica (${userSettings.sysMin}-${userSettings.sysMax}), Diastólica (${userSettings.diaMin}-${userSettings.diaMax})`, 14, 34);
 
-            // Preparar datos para AutoTable
             const tableData = filteredDates.map(date => {
                 const r = records[date];
                 const formatToma = (t) => t && t.sys && t.dia ? `${t.sys}/${t.dia}` : '-';
+                const status = getBPStatus(r.avgSys, r.avgDia, r.noMedicion);
                 
+                if (r.noMedicion) {
+                    return [
+                        formatDateEs(date), '-', '-', '-', '-', '-', r.meds ? 'Sí' : 'No', 'No medición', r.comentarios || ''
+                    ];
+                }
+
                 return [
                     formatDateEs(date),
-                    formatToma(r.tomas[0]),
-                    formatToma(r.tomas[1]),
-                    formatToma(r.tomas[2]),
+                    formatToma(r.tomas ? r.tomas[0] : null),
+                    formatToma(r.tomas ? r.tomas[1] : null),
+                    formatToma(r.tomas ? r.tomas[2] : null),
                     `${r.avgSys || '-'}/${r.avgDia || '-'}`,
                     r.avgPul || '-',
-                    r.meds ? 'Sí' : 'No'
+                    r.meds ? 'Sí' : 'No',
+                    status ? status.statusLabel : '-',
+                    r.comentarios || ''
                 ];
             });
 
-            // Generar Tabla
             doc.autoTable({
-                startY: 35,
-                head: [['Fecha', '1ª Toma', '2ª Toma', '3ª Toma', 'Media Diaria', 'Pulso', 'Pastilla']],
+                startY: 40,
+                head: [['Fecha', 'Toma 1', 'Toma 2', 'Toma 3', 'Media Diaria', 'Pulso', 'Pastilla', 'Estado', 'Comentarios']],
                 body: tableData,
                 theme: 'grid',
                 headStyles: { fillColor: [41, 128, 185], halign: 'center' },
                 columnStyles: {
-                    0: { halign: 'center', fontStyle: 'bold' },
-                    1: { halign: 'center' },
-                    2: { halign: 'center' },
-                    3: { halign: 'center' },
-                    4: { halign: 'center', fontStyle: 'bold', fillColor: [240, 248, 255] },
-                    5: { halign: 'center' },
-                    6: { halign: 'center' }
+                    0: { halign: 'center', fontStyle: 'bold', cellWidth: 25 },
+                    1: { halign: 'center', cellWidth: 20 },
+                    2: { halign: 'center', cellWidth: 20 },
+                    3: { halign: 'center', cellWidth: 20 },
+                    4: { halign: 'center', fontStyle: 'bold', fillColor: [240, 248, 255], cellWidth: 25 },
+                    5: { halign: 'center', cellWidth: 15 },
+                    6: { halign: 'center', cellWidth: 18 },
+                    7: { halign: 'center', fontStyle: 'italic', cellWidth: 35 },
+                    8: { halign: 'left', cellWidth: 'auto' } // Comentarios ocupa el resto
                 },
                 styles: { fontSize: 9 }
             });
 
-            // Descargar PDF
             doc.save(`Tension_${fromDate}_al_${toDate}.pdf`);
         }
 
@@ -615,14 +779,12 @@
             reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    // Mezclar datos (sobrescribe si existe el mismo día)
                     records = { ...records, ...importedData };
                     localStorage.setItem('tensionData', JSON.stringify(records));
                     
                     alert("✅ Datos importados correctamente.");
-                    event.target.value = ''; // Resetear input file
+                    event.target.value = ''; 
                     
-                    // Actualizar vista actual si es historial o calendario
                     if (document.getElementById('view-registro').classList.contains('active')) renderCalendar();
                     if (document.getElementById('view-historial').classList.contains('active')) renderHistory();
                     
